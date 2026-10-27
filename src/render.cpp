@@ -12,7 +12,7 @@ std::vector<UIWindow> activeWindows;
 void init_windows() {
 	if (windows_initialized)
 		return;
-	activeWindows.emplace_back("spotify#1", ui::windows::spotify, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize);
+	activeWindows.emplace_back("spotify#1", ui::windows::mediaplayer, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize);
 
 	windows_initialized = true;
 }

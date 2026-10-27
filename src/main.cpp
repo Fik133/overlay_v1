@@ -3,8 +3,9 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-
+#include <thread>
 #include "fonts/ElmsSans.h"
+#include "globals.hpp"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -17,6 +18,7 @@
 	bool is_passtrough = true;
 
 extern bool RenderUI();
+extern void ThreadMediaWindows();
 
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 
@@ -98,6 +100,10 @@ int main() {
 
 	ImFont* ElmsSans = io.Fonts->AddFontFromMemoryTTF(ElmsSans_rawData, sizeof(ElmsSans_rawData), 15.0f, &fontConfig, ranges);
 
+	// Creating Media Thread
+	std::thread mediaThread(ThreadMediaWindows);
+	mediaThread.detach();
+
 	while (!glfwWindowShouldClose(window)) {
 
 #ifdef _WIN32
@@ -132,6 +138,7 @@ int main() {
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+	g_running = false;
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
@@ -139,6 +146,7 @@ int main() {
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
+
 
 	return 0;
 }
