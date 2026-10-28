@@ -19,7 +19,7 @@ include(FetchContent)
 FetchContent_Declare(
     imgui
     GIT_REPOSITORY https://github.com/ocornut/imgui
-    GIT_TAG        master
+    GIT_TAG        v1.93.0
 )
 FetchContent_MakeAvailable(imgui)
 
@@ -31,7 +31,7 @@ add_library(imgui STATIC
     ${imgui_SOURCE_DIR}/imgui_widgets.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
- "src/render.cpp" "src/ui.cpp" "src/fonts/ElmsSans.h" "src/media.cpp")
+ "src/render.cpp" "src/ui.cpp" "src/fonts/ElmsSans.h" "src/media.cpp" "external/include/stb_image.h")
 
 target_include_directories(imgui PUBLIC
     ${imgui_SOURCE_DIR}
@@ -40,5 +40,5 @@ target_include_directories(imgui PUBLIC
 
 target_link_libraries(imgui PUBLIC glfw)
 
-add_executable(OverlayProjekt src/main.cpp "src/render.cpp" "src/ui.cpp" "src/fonts/ElmsSans.h" "src/media.cpp")
+add_executable(OverlayProjekt src/main.cpp "src/render.cpp" "src/ui.cpp" "src/fonts/ElmsSans.h" "src/media.cpp" "external/include/stb_image.h")
 target_link_libraries(OverlayProjekt PRIVATE imgui glfw OpenGL::GL)

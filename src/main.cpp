@@ -6,6 +6,9 @@
 #include <thread>
 #include "fonts/ElmsSans.h"
 #include "globals.hpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include "../external/include/stb_image.h"
+#include "ui.hpp"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -20,7 +23,7 @@
 extern bool RenderUI();
 extern void ThreadMediaWindows();
 
-#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+//#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 
 int main() {
 	
@@ -28,7 +31,7 @@ int main() {
 		std::cerr << "[GLFW] Failed to initialize glfw!\n";
 		return -1;
 	}
-
+	
 	const auto monitor = glfwGetPrimaryMonitor();
 
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
@@ -83,7 +86,7 @@ int main() {
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  
 
 	ImGuiStyle& style = ImGui::GetStyle();
-	ImGui::StyleColorsGraphiteBlue();
+	styles::ui::dark_color();
 
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 330");
@@ -105,6 +108,8 @@ int main() {
 	mediaThread.detach();
 
 	while (!glfwWindowShouldClose(window)) {
+
+
 
 #ifdef _WIN32
 		if (GetAsyncKeyState(disable_window) & 0x8000) {
