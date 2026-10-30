@@ -56,14 +56,21 @@ namespace ui {
 template<typename T>
 inline void UIProgressBar<T>::render()
 {
-	ImVec2 cursor = ImGui::GetCursorScreenPos();
+	ImVec2 posScreen = ImGui::GetCursorScreenPos();
+	posScreen = ImVec2(posScreen.x, posScreen.y - height);
+	ImVec2 posCursor = ImGui::GetCursorPos();
+	posCursor = ImVec2(posCursor.x, posCursor.y - height);
+
+	ImGui::SetCursorPos(posCursor);
 	ImGui::PushID(this);
-	ImGui::InvisibleButton("progress_bar", ImVec2(width, height));
+	ImGui::Button("progress_bar", ImVec2(width, height));
 	ImGui::PopID();
 	auto drawlist = ImGui::GetWindowDrawList();
 
 	auto style = ImGui::GetStyle();
 	float rounding = style.FrameRounding;
+	
+	ImVec2& cursor = posScreen;
 
 	drawlist->AddRectFilled(cursor, ImVec2(cursor.x + width, cursor.y + height), ImColor(ChangeAlpha(ImGui::GetStyle().Colors[ImGuiCol_SliderGrabActive], 0.3f)), rounding);
 

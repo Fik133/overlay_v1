@@ -1,4 +1,5 @@
 #include <iostream>
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include <GLFW/glfw3.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
@@ -23,7 +24,7 @@
 extern bool RenderUI();
 extern void ThreadMediaWindows();
 
-//#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 
 int main() {
 	

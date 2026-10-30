@@ -108,8 +108,19 @@ void UpdateThumbnail() {
 
 UIProgressBar<float> mediaProgress;
 
+
+std::string secondsToString(int value) {
+	int minutes = value / 60;
+	int seconds = value - (minutes * 60);
+	return std::format("{}:{:02d}", minutes, seconds);
+}
+
+int old_time_info;
+
 void ui::windows::mediaplayer() {
 
+	static float accumulated_time = 0;
+	
 	{
 		std::lock_guard<std::mutex> lock(mtx_media);
 		if (g_mediaInfo.thumbnail_changed) {
@@ -122,6 +133,24 @@ void ui::windows::mediaplayer() {
 	{
 		std::lock_guard<std::mutex> lock(mtx_media);
 		info = g_mediaInfo;
+	}
+
+	if (old_time_info != info.time_current) { // time has just updated
+		old_time_info = info.time_current;
+		accumulated_time = 0;
+	}
+
+	if (info.is_playing) {
+		accumulated_time += ImGui::GetIO().DeltaTime;
+	}else {
+		accumulated_time = 0.0f;
+	}
+
+	float precise_current_time = static_cast<float>(info.time_current) + accumulated_time;
+	int display_seconds = static_cast<int>(precise_current_time);
+
+	if (display_seconds > info.time_total) {
+		display_seconds = info.time_total;
 	}
 
 	ImTextureID texId = (ImTextureID)(intptr_t)g_loadedTextureID;
@@ -144,24 +173,36 @@ void ui::windows::mediaplayer() {
 
 	ImVec2 pMin = ImGui::GetItemRectMin();
 	ImVec2 pMax = ImGui::GetItemRectMax();
-
-	float cpy = ImGui::GetCursorPosY();
+	
+	ImVec2 posCursor = ImGui::GetCursorPos();
 
 	ImGui::SameLine();
 	ImGui::BeginGroup(); 
 	{
-		float csp = ImGui::GetCursorPosY();
-		ImGui::Text(info.title.c_str());
-		ImGui::SetCursorPosY(csp + 12.f);
-
-		ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f), std::string("by " + info.artist).c_str());
-
-		ImGui::SetCursorPosY(cpy - ImGui::GetStyle().ItemSpacing.y);
-		ImVec2 availableSpace = ImGui::GetContentRegionAvail();
+		//Progress bar settings
 		mediaProgress.set_max(info.time_total);
 		mediaProgress.set_min(0);
-		mediaProgress.set_current(info.time_current);
-		mediaProgress.set_width(availableSpace.x);
+		mediaProgress.set_current(display_seconds);
+
+		const float font_size = ImGui::GetStyle().FontSizeBase;
+		float csp = ImGui::GetCursorPosY();
+
+		ImGui::Text(info.title.c_str());
+			ImGui::SetCursorPosY(csp + ImGui::GetStyle().FontSizeBase);
+		ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f), std::string("by " + info.artist).c_str());
+
+			ImGui::SetCursorPosY(posCursor.y - 2*ImGui::GetStyle().ItemSpacing.y - font_size);
+		ImGui::Text(secondsToString(display_seconds).c_str());
+			ImGui::SameLine();
+		std::string text = secondsToString(info.time_total);
+		
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(text.c_str()).x);
+		ImGui::Text(text.c_str());
+		
+		posCursor = ImGui::GetCursorPos();
+			ImGui::SetCursorPosY(posCursor.y);
+		ImVec2 availableSpace = ImGui::GetContentRegionAvail();
+			mediaProgress.set_width(availableSpace.x);
 		mediaProgress.render();
 	}
 	ImGui::EndGroup();
