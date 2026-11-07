@@ -1,6 +1,27 @@
 #include "ui.hpp"
+#include "globals.hpp"
 #include <imgui.h>
 #include <math.h>
+
+bool selectable(const char* label, bool* p_selected = false) {
+
+    ImGui::Text(label);
+
+    bool result = ImGui::IsItemClicked();
+
+    bool& selected = *p_selected;
+
+    if (result) {
+        selected = !selected;
+    }
+
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+    }
+
+    return result;
+}
+
 bool UIWindow::display_content() noexcept {
 	if (content == nullptr)
 		return false;
@@ -23,10 +44,72 @@ bool UIWindow::display_content() noexcept {
         min_win_size = this->min_size;
     }
 
+
+    if (!this->visible_passthrough && g_isPassthrough)
+        return true; 
+
+    if (this->collapsed) {
+        this->opacity_factor = OPACITY_COLLAPSED;
+    }
+    else {
+        this->opacity_factor = 1.f;
+    }
+
+    ImVec4 window_bg = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
+
+    ImVec4 new_style = ChangeAlpha(window_bg, window_bg.w * opacity_factor);
+
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, new_style);
     ImGui::SetNextWindowSizeConstraints(min_win_size, max_window_size);
 	ImGui::Begin(this->title, &this->showed, this->flags);
-	this->content();
+
+    bool show_collapse_menu = !(this->window_flags & UIWindowFlags_NoCollapse);
+
+    if ((this->window_flags & UIWindowFlags_ShowTitleCollapsed) && (this->collapsed || ImGui::IsWindowHovered() && !g_isPassthrough) && show_collapse_menu) {
+        ImGui::Text(this->title);
+        ImGui::SameLine();
+    }
+
+    if (!g_isPassthrough && show_collapse_menu) {
+
+        if (ImGui::IsWindowHovered()) {
+
+            float spacing_x = ImGui::GetStyle().ItemSpacing.x;
+
+            float available_x = ImGui::GetContentRegionAvail().x;
+
+            const char* text = this->visible_passthrough ? ICON_FA_EYE : ICON_FA_EYE_SLASH;
+
+            float text_size_x = ImGui::CalcTextSize(text).x;
+
+            float next_item_position = ImGui::GetCursorPosX() + available_x - text_size_x;
+
+            ImGui::SetCursorPosX(next_item_position);
+
+            selectable(text, &this->visible_passthrough);
+
+            text = this->collapsed ? ICON_FA_CHEVRON_UP : ICON_FA_CHEVRON_DOWN;
+
+            ImGui::SameLine();
+
+            text_size_x = ImGui::CalcTextSize(text).x;
+
+            ImGui::SetCursorPosX(next_item_position - text_size_x - ImGui::GetStyle().ItemSpacing.x);
+
+            selectable(text, &this->collapsed);
+
+            if(!this->collapsed)
+                ImGui::Separator();
+        }
+    }
+
+    if ((!this->collapsed)) {
+        this->content();
+    }
+
 	ImGui::End();
+
+    ImGui::PopStyleColor(1);
 
 	return true;
 }
@@ -37,7 +120,7 @@ void styles::ui::dark_color() {
 
     colors[ImGuiCol_Text]                   = ImVec4(0.95f, 0.95f, 0.97f, 1.00f); 
     colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.55f, 1.00f);
-    colors[ImGuiCol_WindowBg]               = ImVec4(0.11f, 0.11f, 0.13f, 0.94f); 
+    colors[ImGuiCol_WindowBg]               = ImVec4(0.11f, 0.11f, 0.13f, 0.80f); 
     colors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
     colors[ImGuiCol_PopupBg]                = ImVec4(0.13f, 0.13f, 0.16f, 0.94f);
     colors[ImGuiCol_Border]                 = ImVec4(0.25f, 0.25f, 0.30f, 0.50f); 

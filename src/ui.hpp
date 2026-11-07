@@ -2,8 +2,8 @@
 #include <imgui.h>
 #include <functional>
 #include <string>
+#include "../external/include/IconsFontAwesome7.h"
 using FContent = std::function<void()>;
-
 
 namespace styles {
 	namespace ui {
@@ -11,16 +11,33 @@ namespace styles {
 	}
 }
 
+
 inline ImVec4 ChangeAlpha(ImVec4 vector, float alpha) {
 	return ImVec4(vector.x, vector.y, vector.z, alpha);
 }
 
+enum UIWindowFlags_ {
+	UIWindowFlags_None = 0,
+	UIWindowFlags_ShowTitleCollapsed = 1 << 0,
+	UIWindowFlags_NoCollapse = 2 << 0
+};
+
+typedef int UIWindowFlags;
+
+constexpr float OPACITY_COLLAPSED = 0.5f;
+
 struct UIWindow {
-	UIWindow(const char* _title, FContent _content, ImGuiWindowFlags _flags, bool _showed = true, ImVec2 _min_size = ImVec2(0,0), ImVec2 _max_size = ImVec2(FLT_MAX,FLT_MAX)) :
-		title(_title), showed(_showed), content(_content), flags(_flags),  min_size(_min_size), max_size(_max_size) {}
+	UIWindow(const char* _title, FContent _content, ImGuiWindowFlags _flags, UIWindowFlags _window_flags, bool _showed = true, ImVec2 _min_size = ImVec2(0,0), ImVec2 _max_size = ImVec2(FLT_MAX,FLT_MAX)) :
+		title(_title), showed(_showed), content(_content), flags(_flags),  min_size(_min_size), max_size(_max_size), window_flags(_window_flags) {}
 	bool showed = true;
+	bool visible_passthrough = true;
+	bool collapsed = false;
+	float opacity = 0.94f;
+	float opacity_factor = 1.f;
 	const char* title = "";
+	int topbar_offset = 0;
 	FContent content = nullptr; 
+	UIWindowFlags window_flags;
 	ImGuiWindowFlags flags;
 	ImVec2 min_size = ImVec2(0,0);
 	ImVec2 max_size = ImVec2(FLT_MAX,FLT_MAX);
@@ -50,8 +67,10 @@ struct UIProgressBar {
 namespace ui {
 	namespace windows {
 		void mediaplayer();
+		void topbar();
 	}
 }
+
 
 template<typename T>
 inline void UIProgressBar<T>::render()

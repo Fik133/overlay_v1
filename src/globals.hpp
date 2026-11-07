@@ -17,3 +17,4 @@ inline std::atomic<bool> g_running = true;
 inline std::mutex mtx_media;
 inline MediaInfo g_mediaInfo;
 inline unsigned int g_loadedTextureID = 0;
+inline bool g_isPassthrough = true;

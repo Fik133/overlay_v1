@@ -5,11 +5,16 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <thread>
-#include "fonts/ElmsSans.h"
 #include "globals.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "../external/include/stb_image.h"
 #include "ui.hpp"
+
+#include "../external/include/IconsFontAwesome7.h"
+
+//fonts
+#include "fonts/ElmsSans.h"
+#include "fonts/fa_solid900.h"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -18,8 +23,7 @@
 	constexpr int disable_window = GLFW_KEY_END;
 #endif // _WIN32
 
-	int passthrough_key = VK_F2;
-	bool is_passtrough = true;
+int passthrough_key = VK_F2;
 
 extern bool RenderUI();
 extern void ThreadMediaWindows();
@@ -97,12 +101,21 @@ int main() {
 	fontConfig.OversampleH = 2;
 	fontConfig.OversampleV = 2;
 
-	static const ImWchar ranges[] = {
+	static const ImWchar latin_ranges[] = {
 		0x0020, 0x00FF,
 		0,
 	};
 
-	ImFont* ElmsSans = io.Fonts->AddFontFromMemoryTTF(ElmsSans_rawData, sizeof(ElmsSans_rawData), 15.0f, &fontConfig, ranges);
+	static const ImWchar fa_ranges[] = {
+		ICON_MIN_FA, ICON_MAX_FA,
+		0,
+	};
+
+	ImFont* ElmsSans = io.Fonts->AddFontFromMemoryTTF(ElmsSans_rawData, sizeof(ElmsSans_rawData), 15.0f, &fontConfig, latin_ranges);
+
+	fontConfig.MergeMode = true;
+
+	ImFont* FASolid900 = io.Fonts->AddFontFromMemoryTTF(fa_solid900raw, sizeof(fa_solid900raw), 12.0f, &fontConfig, fa_ranges);
 
 	// Creating Media Thread
 	std::thread mediaThread(ThreadMediaWindows);
@@ -124,12 +137,12 @@ int main() {
 
 #ifdef _WIN32
 		if (GetAsyncKeyState(passthrough_key) & 1) {
-			is_passtrough = !is_passtrough;
-			glfwSetWindowAttrib(window, GLFW_MOUSE_PASSTHROUGH, is_passtrough ? GLFW_TRUE : GLFW_FALSE);
+			g_isPassthrough = !g_isPassthrough;
+			glfwSetWindowAttrib(window, GLFW_MOUSE_PASSTHROUGH, g_isPassthrough ? GLFW_TRUE : GLFW_FALSE);
 		}
 #endif
 
-		glClearColor(0.f, 0.f, 0.f, is_passtrough ? 0.0f : 0.2f);
+		glClearColor(0.f, 0.f, 0.f, g_isPassthrough ? 0.0f : 0.2f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		ImGui_ImplOpenGL3_NewFrame();

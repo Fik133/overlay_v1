@@ -4,6 +4,8 @@
 #include "../external/include/stb_image.h"
 #include <GLFW/glfw3.h>
 #include <iostream>
+
+
 // windows
 
 #ifdef _WIN32
@@ -173,7 +175,7 @@ void ui::windows::mediaplayer() {
 
 	ImVec2 pMin = ImGui::GetItemRectMin();
 	ImVec2 pMax = ImGui::GetItemRectMax();
-	
+
 	ImVec2 posCursor = ImGui::GetCursorPos();
 
 	ImGui::SameLine();
@@ -187,19 +189,50 @@ void ui::windows::mediaplayer() {
 		const float font_size = ImGui::GetStyle().FontSizeBase;
 		float csp = ImGui::GetCursorPosY();
 
-		ImGui::Text(info.title.c_str());
+		std::string text = info.title;
+		ImGui::Text(text.c_str());
 			ImGui::SetCursorPosY(csp + ImGui::GetStyle().FontSizeBase);
 		ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f), std::string("by " + info.artist).c_str());
 
 			ImGui::SetCursorPosY(posCursor.y - 2*ImGui::GetStyle().ItemSpacing.y - font_size);
 		ImGui::Text(secondsToString(display_seconds).c_str());
-			ImGui::SameLine();
-		std::string text = secondsToString(info.time_total);
+
+		ImGui::SameLine();
+
+		const char* icon_text = info.is_playing ? ICON_FA_PAUSE : ICON_FA_PLAY; // Playing text |> ||
+
+		text = secondsToString(info.time_total);
+		float available_x = ImGui::GetContentRegionAvail().x;
+		float icon_size = ImGui::CalcTextSize(icon_text).x;
+		float text_size = ImGui::CalcTextSize(text.c_str()).x;
+		float next_item_pos = ImGui::GetCursorPosX() + (available_x / 2) + (icon_size / 2) - text_size;
+		ImGui::SetCursorPosX(next_item_pos);
+
+		ImGui::Text(icon_text);
+
+		ImGui::SameLine();
+
+		icon_text = ICON_FA_FORWARD;
+
+		icon_size = ImGui::CalcTextSize(icon_text).x;
+		ImGui::SetCursorPosX(next_item_pos  + icon_size);
+		ImGui::Text(icon_text);
+
+		ImGui::SameLine();
+
+		icon_text = ICON_FA_BACKWARD;
+
+		icon_size = ImGui::CalcTextSize(icon_text).x;
+		ImGui::SetCursorPosX(next_item_pos - ImGui::GetStyle().ItemSpacing.x  - icon_size);
+		ImGui::Text(icon_text);
+
+		ImGui::SameLine();
 		
 			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(text.c_str()).x);
 		ImGui::Text(text.c_str());
-		
+
 		posCursor = ImGui::GetCursorPos();
+
 			ImGui::SetCursorPosY(posCursor.y);
 		ImVec2 availableSpace = ImGui::GetContentRegionAvail();
 			mediaProgress.set_width(availableSpace.x);
