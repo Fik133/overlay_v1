@@ -17,9 +17,12 @@ inline ImVec4 ChangeAlpha(ImVec4 vector, float alpha) {
 }
 
 enum UIWindowFlags_ {
-	UIWindowFlags_None = 0,
-	UIWindowFlags_ShowTitleCollapsed = 1 << 0,
-	UIWindowFlags_NoCollapse = 2 << 0
+	UIWindowFlags_None					= 0,
+	UIWindowFlags_ShowTitleCollapsed	= 1 << 0,
+	UIWindowFlags_NoCollapse			= 1 << 1,
+	UIWindowFlags_SetInitialPosition	= 1 << 2,
+	UIWindowFlags_HideOnPassthrough		= 1 << 3,
+	UIWindowFlags_FixedPosition			= 1 << 4,
 };
 
 typedef int UIWindowFlags;
@@ -27,11 +30,13 @@ typedef int UIWindowFlags;
 constexpr float OPACITY_COLLAPSED = 0.5f;
 
 struct UIWindow {
-	UIWindow(const char* _title, FContent _content, ImGuiWindowFlags _flags, UIWindowFlags _window_flags, bool _showed = true, ImVec2 _min_size = ImVec2(0,0), ImVec2 _max_size = ImVec2(FLT_MAX,FLT_MAX)) :
-		title(_title), showed(_showed), content(_content), flags(_flags),  min_size(_min_size), max_size(_max_size), window_flags(_window_flags) {}
+	UIWindow(const char* _title, FContent _content, ImGuiWindowFlags _flags, UIWindowFlags _window_flags, bool _showed = true, ImVec2 _min_size = ImVec2(0,0), ImVec2 _max_size = ImVec2(FLT_MAX,FLT_MAX), ImVec2 _initial_position = ImVec2(0, 0)) :
+		title(_title), showed(_showed), content(_content), flags(_flags),  min_size(_min_size), max_size(_max_size), window_flags(_window_flags),
+	initial_position(_initial_position) {}
 	bool showed = true;
 	bool visible_passthrough = true;
 	bool collapsed = false;
+	bool is_initial_position_set = false;
 	float opacity = 0.94f;
 	float opacity_factor = 1.f;
 	const char* title = "";
@@ -41,6 +46,7 @@ struct UIWindow {
 	ImGuiWindowFlags flags;
 	ImVec2 min_size = ImVec2(0,0);
 	ImVec2 max_size = ImVec2(FLT_MAX,FLT_MAX);
+	ImVec2 initial_position = ImVec2(0, 0);
 
 	bool display_content() noexcept;
 	bool set_visible(bool _showed) noexcept {

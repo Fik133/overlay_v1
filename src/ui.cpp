@@ -48,6 +48,10 @@ bool UIWindow::display_content() noexcept {
     if (!this->visible_passthrough && g_isPassthrough)
         return true; 
 
+    if (g_isPassthrough && (this->window_flags & UIWindowFlags_HideOnPassthrough)) {
+        return true;
+    }
+
     if (this->collapsed) {
         this->opacity_factor = OPACITY_COLLAPSED;
     }
@@ -61,7 +65,21 @@ bool UIWindow::display_content() noexcept {
 
     ImGui::PushStyleColor(ImGuiCol_WindowBg, new_style);
     ImGui::SetNextWindowSizeConstraints(min_win_size, max_window_size);
+
 	ImGui::Begin(this->title, &this->showed, this->flags);
+
+    bool has_flag = (this->window_flags & UIWindowFlags_SetInitialPosition);
+    
+    // To make window fixed on a certain position use UIWindowFlags_SetInitialPosition and ImGuiWindowFlags_NoMove
+    // instead of UIWindowFlags_FixedPosition for optimization
+    // but if you have to make the window move for some reason feel free to use UIWindowFlags_FixedPosition flag
+    if ((this->window_flags & UIWindowFlags_FixedPosition)) {
+        ImGui::SetWindowPos(this->initial_position);
+    }
+    else if ((this->window_flags & UIWindowFlags_SetInitialPosition) && !this->is_initial_position_set) {
+        ImGui::SetWindowPos(this->initial_position);
+        this->is_initial_position_set = true;
+    }
 
     bool show_collapse_menu = !(this->window_flags & UIWindowFlags_NoCollapse);
 

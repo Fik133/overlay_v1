@@ -81,6 +81,12 @@ int main() {
 	glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
 	glViewport(0, 0, framebufferWidth, framebufferHeight);
 
+#ifdef _WIN32
+	g_FrameBufferSize = ImVec2(framebufferWidth - 1.f, framebufferHeight);
+#else
+	g_FrameBufferSize = { framebufferWidth, framebufferHeight };
+#endif // _WIN32
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

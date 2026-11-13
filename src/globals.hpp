@@ -2,6 +2,7 @@
 #include <atomic>
 #include <mutex>
 #include <vector>
+#include <imgui.h>
 
 struct MediaInfo {
 	std::string title = "Unknown";
@@ -18,3 +19,4 @@ inline std::mutex mtx_media;
 inline MediaInfo g_mediaInfo;
 inline unsigned int g_loadedTextureID = 0;
 inline bool g_isPassthrough = true;
+inline ImVec2 g_FrameBufferSize = ImVec2(0, 0);
