@@ -4,7 +4,7 @@
 #include "../external/include/stb_image.h"
 #include <GLFW/glfw3.h>
 #include <iostream>
-
+#include <Windows.h>
 
 // windows
 
@@ -110,6 +110,17 @@ void UpdateThumbnail() {
 
 UIProgressBar<float> mediaProgress;
 
+void text_on_hover_pointer_event(const char* text, std::function<void()> onClick) {
+	ImGui::TextUnformatted(text);
+	
+	if (ImGui::IsItemClicked()) {
+		onClick();
+	}
+
+	if (ImGui::IsItemHovered()) {
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+	}
+}
 
 std::string secondsToString(int value) {
 	int minutes = value / 60;
@@ -118,6 +129,32 @@ std::string secondsToString(int value) {
 }
 
 int old_time_info;
+
+#ifdef _WIN32
+
+void PauseButtonEvent() {
+	keybd_event(VK_MEDIA_PLAY_PAUSE, 0, 0, 0);
+	keybd_event(VK_MEDIA_PLAY_PAUSE, 0, KEYEVENTF_KEYUP, 0);
+}
+void NextButtonEvent() {
+	keybd_event(VK_MEDIA_NEXT_TRACK, 0, 0, 0);
+	keybd_event(VK_MEDIA_NEXT_TRACK, 0, KEYEVENTF_KEYUP, 0);
+}
+void PrevButtonEvent() {
+	keybd_event(VK_MEDIA_PREV_TRACK, 0, 0, 0);
+	keybd_event(VK_MEDIA_PREV_TRACK, 0, KEYEVENTF_KEYUP, 0);
+}
+#else
+// Some day maybe I'll implement it for linux
+void PauseButtonEvent() {
+
+}
+void NextButtonEvent() {
+
+}
+void NextButtonEvent() {
+}
+#endif // _WIN32
 
 void ui::windows::mediaplayer() {
 
@@ -199,36 +236,10 @@ void ui::windows::mediaplayer() {
 
 		ImGui::SameLine();
 
-		const char* icon_text = info.is_playing ? ICON_FA_PAUSE : ICON_FA_PLAY; // Playing text |> ||
 
 		text = secondsToString(info.time_total);
-		float available_x = ImGui::GetContentRegionAvail().x;
-		float icon_size = ImGui::CalcTextSize(icon_text).x;
-		float text_size = ImGui::CalcTextSize(text.c_str()).x;
-		float next_item_pos = ImGui::GetCursorPosX() + (available_x / 2) + (icon_size / 2) - text_size;
-		ImGui::SetCursorPosX(next_item_pos);
-
-		ImGui::Text(icon_text);
-
-		ImGui::SameLine();
-
-		icon_text = ICON_FA_FORWARD;
-
-		icon_size = ImGui::CalcTextSize(icon_text).x;
-		ImGui::SetCursorPosX(next_item_pos  + icon_size);
-		ImGui::Text(icon_text);
-
-		ImGui::SameLine();
-
-		icon_text = ICON_FA_BACKWARD;
-
-		icon_size = ImGui::CalcTextSize(icon_text).x;
-		ImGui::SetCursorPosX(next_item_pos - ImGui::GetStyle().ItemSpacing.x  - icon_size);
-		ImGui::Text(icon_text);
-
-		ImGui::SameLine();
-		
 			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(text.c_str()).x);
+			float cursorY = ImGui::GetCursorPosY();
 		ImGui::Text(text.c_str());
 
 		posCursor = ImGui::GetCursorPos();
@@ -236,7 +247,37 @@ void ui::windows::mediaplayer() {
 			ImGui::SetCursorPosY(posCursor.y);
 		ImVec2 availableSpace = ImGui::GetContentRegionAvail();
 			mediaProgress.set_width(availableSpace.x);
+
+		float cursorX = ImGui::GetCursorPosX();
+
 		mediaProgress.render();
+
+		const char* icon = info.is_playing ? ICON_FA_CIRCLE_PAUSE : ICON_FA_CIRCLE_PLAY;
+
+		float icon_size = ImGui::CalcTextSize(icon).x;
+
+		ImGui::SetCursorPos(ImVec2((cursorX + availableSpace.x / 2) - icon_size/2, cursorY));
+
+		text_on_hover_pointer_event(icon, PauseButtonEvent);
+
+		icon = ICON_FA_CIRCLE_CHEVRON_LEFT;
+
+		icon_size = ImGui::CalcTextSize(icon).x;
+
+		float spacing = ImGui::GetStyle().ItemSpacing.x;
+
+		ImGui::SetCursorPos(ImVec2((cursorX + availableSpace.x / 2) - icon_size - spacing, cursorY));
+
+		text_on_hover_pointer_event(icon, PrevButtonEvent);
+
+		icon = ICON_FA_CIRCLE_CHEVRON_RIGHT;
+
+		icon_size = ImGui::CalcTextSize(icon).x;
+
+		ImGui::SetCursorPos(ImVec2((cursorX + availableSpace.x / 2) + spacing, cursorY));
+
+		text_on_hover_pointer_event(icon, NextButtonEvent);
+
 	}
 	ImGui::EndGroup();
 	
