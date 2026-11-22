@@ -34,6 +34,7 @@ struct UIWindow {
 		title(_title), showed(_showed), content(_content), flags(_flags),  min_size(_min_size), max_size(_max_size), window_flags(_window_flags),
 	initial_position(_initial_position) {}
 	bool showed = true;
+	bool hidden = false;
 	bool visible_passthrough = true;
 	bool collapsed = false;
 	bool is_initial_position_set = false;
@@ -49,8 +50,8 @@ struct UIWindow {
 	ImVec2 initial_position = ImVec2(0, 0);
 
 	bool display_content() noexcept;
-	bool set_visible(bool _showed) noexcept {
-		showed = _showed;
+	void set_hidden(bool _hidden) {
+		hidden = _hidden;
 	}
 };
 
@@ -74,7 +75,12 @@ namespace ui {
 	namespace windows {
 		void mediaplayer();
 		void topbar();
+		void demo();
 	}
+}
+
+inline void ui::windows::demo() {
+	ImGui::Text("Demo Window");
 }
 
 

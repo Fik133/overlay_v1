@@ -26,6 +26,10 @@ bool UIWindow::display_content() noexcept {
 	if (content == nullptr)
 		return false;
 
+    if (this->hidden) {
+        return true;
+    }
+
     ImVec2 max_window_size = { FLT_MAX, FLT_MAX };
     ImVec2 min_win_size = { 0 , 0 };
 
@@ -43,7 +47,6 @@ bool UIWindow::display_content() noexcept {
 
         min_win_size = this->min_size;
     }
-
 
     if (!this->visible_passthrough && g_isPassthrough)
         return true; 
@@ -156,6 +159,7 @@ void styles::ui::dark_color() {
     colors[ImGuiCol_ButtonActive]           = ImVec4(0.10f, 0.80f, 0.40f, 1.00f);
 
     colors[ImGuiCol_Header]                 = ImVec4(0.20f, 0.20f, 0.25f, 1.00f);
+    colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.20f, 0.20f, 0.25f, 0.10f);
     colors[ImGuiCol_HeaderHovered]          = ImVec4(0.28f, 0.28f, 0.35f, 1.00f);
     colors[ImGuiCol_HeaderActive]           = ImVec4(0.10f, 0.80f, 0.40f, 1.00f);
 

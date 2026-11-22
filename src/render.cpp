@@ -46,6 +46,36 @@ void init_windows() {
 		ImVec2(topbar_x_position, 0)
 	);
 
+	activeWindows.emplace_back(
+		"Settings",
+		ui::windows::demo,
+		ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize,
+		UIWindowFlags_ShowTitleCollapsed,
+		false, 
+		ImVec2(400, 0),
+		ImVec2(400, FLT_MAX)
+	);
+
+	activeWindows.emplace_back(
+		"Whiteboard Widget",
+		ui::windows::demo,
+		ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize,
+		UIWindowFlags_ShowTitleCollapsed,
+		false, 
+		ImVec2(400, 0),
+		ImVec2(400, FLT_MAX)
+	);
+
+	activeWindows.emplace_back(
+		"Widget Settings",
+		ui::windows::demo,
+		ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize,
+		UIWindowFlags_ShowTitleCollapsed,
+		false, 
+		ImVec2(400, 0),
+		ImVec2(400, FLT_MAX)
+	);
+
 	windows_initialized = true;
 }
 
@@ -56,6 +86,17 @@ bool RenderUI() {
 	for (auto &active : activeWindows)
 	{
 		active.display_content();
+	}
+
+	if (g_showSettings && !activeWindows[2].showed) {
+		activeWindows[2].set_hidden(false);
+	}
+	if (g_showWhiteboard && !activeWindows[3].showed) {
+		activeWindows[3].set_hidden(false);
+	}
+
+	if (g_showWidgetSettings && !activeWindows[4].showed) {
+		activeWindows[4].set_hidden(false);
 	}
 
 	return true;
