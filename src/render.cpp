@@ -88,16 +88,5 @@ bool RenderUI() {
 		active.display_content();
 	}
 
-	if (g_showSettings && !activeWindows[2].showed) {
-		activeWindows[2].set_hidden(false);
-	}
-	if (g_showWhiteboard && !activeWindows[3].showed) {
-		activeWindows[3].set_hidden(false);
-	}
-
-	if (g_showWidgetSettings && !activeWindows[4].showed) {
-		activeWindows[4].set_hidden(false);
-	}
-
 	return true;
 }

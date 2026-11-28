@@ -31,7 +31,7 @@ add_library(imgui STATIC
     ${imgui_SOURCE_DIR}/imgui_widgets.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
- "src/render.cpp" "src/ui.cpp" "src/fonts/ElmsSans.h" "src/media.cpp" "external/include/stb_image.h" "src/topbar.cpp")
+ "src/render.cpp" "src/ui.cpp" "src/fonts/ElmsSans.h" "src/media.cpp" "external/include/stb_image.h" "src/topbar/topbar.cpp" "src/topbar/topbar.h" "src/topbar/ui_definitions.cpp"  "src/topbar/cpu_usage_monitor.h" "src/utils.h" "src/utils.cpp" "src/topbar/content_settings.cpp" "src/topbar/content_widget.cpp")
 
 target_include_directories(imgui PUBLIC
     ${imgui_SOURCE_DIR}
@@ -40,5 +40,5 @@ target_include_directories(imgui PUBLIC
 
 target_link_libraries(imgui PUBLIC glfw)
 
-add_executable(OverlayProjekt src/main.cpp "src/render.cpp" "src/ui.cpp" "src/fonts/ElmsSans.h" "src/media.cpp" "external/include/stb_image.h" "src/topbar.cpp")
+add_executable(OverlayProjekt src/main.cpp "src/render.cpp" "src/ui.cpp" "src/fonts/ElmsSans.h" "src/media.cpp" "external/include/stb_image.h" "src/topbar/topbar.cpp" "src/topbar/topbar.h" "src/topbar/ui_definitions.cpp"  "src/topbar/cpu_usage_monitor.h" "src/utils.h" "src/utils.cpp" "src/topbar/content_settings.cpp" "src/topbar/content_widget.cpp")
 target_link_libraries(OverlayProjekt PRIVATE imgui glfw OpenGL::GL)

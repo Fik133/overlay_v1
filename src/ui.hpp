@@ -1,8 +1,7 @@
 #pragma once
 #include <imgui.h>
 #include <functional>
-#include <string>
-#include "../external/include/IconsFontAwesome7.h"
+
 using FContent = std::function<void()>;
 
 namespace styles {

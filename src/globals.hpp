@@ -20,6 +20,4 @@ inline MediaInfo g_mediaInfo;
 inline unsigned int g_loadedTextureID = 0;
 inline bool g_isPassthrough = true;
 inline ImVec2 g_FrameBufferSize = ImVec2(0, 0);
-inline bool g_showSettings = false;
-inline bool g_showWidgetSettings = false;
 inline bool g_showWhiteboard = false;
